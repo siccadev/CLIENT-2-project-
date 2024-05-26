@@ -17,6 +17,15 @@ const pool = mysql.createPool({
 });
 
 
+pool.getConnection((err, connection) => {
+  if (err) {
+    console.error('Error connecting to the database:', err);
+    return;
+  }
+  console.log('Database connected successfully'); 
+  connection.release(); 
+});
+
 app.post('/invoices', (req, res) => {
   const { customer_name, amount, date } = req.body;
   pool.query('INSERT INTO invoices (customer_name, amount, date) VALUES (?, ?, ?)', [customer_name, amount, date], (error, results) => {
@@ -29,7 +38,7 @@ app.post('/invoices', (req, res) => {
   });
 });
 
-// Read all invoices
+
 app.get('/invoices', (req, res) => {
   pool.query('SELECT * FROM invoices', (error, results) => {
     if (error) {
@@ -57,7 +66,7 @@ app.get('/invoices/:id', (req, res) => {
   });
 });
 
-// Update an invoice by ID
+
 app.put('/invoices/:id', (req, res) => {
   const id = req.params.id;
   const { customer_name, amount, date } = req.body;
@@ -71,7 +80,6 @@ app.put('/invoices/:id', (req, res) => {
   });
 });
 
-
 app.delete('/invoices/:id', (req, res) => {
   const id = req.params.id;
   pool.query('DELETE FROM invoices WHERE id = ?', [id], (error, results) => {
@@ -84,7 +92,7 @@ app.delete('/invoices/:id', (req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3004;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
